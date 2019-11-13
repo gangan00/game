@@ -2,6 +2,7 @@
 *.d
 *.sln
 *.vcxproj
+*.vcxproj.*
 Debug
 # Object files
 *.o
