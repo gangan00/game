@@ -11,10 +11,12 @@ int main() {
 	extern void title();
 	extern void test_ascll();
 	extern void flower();
+	extern void welcome();
 
 	system("chcp 437");
 	title();
 	flower();
+	welcome();
 	//test_ascll();
 	system("pause");
 	

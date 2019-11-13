@@ -71,6 +71,7 @@ void title() {
 	printf("%c", 254);
 	printf("%c", 254);
 	printf("%c", 254);
+
 	printf("\n\n\n\n\n\n\n\n\n");
 
 	
@@ -163,6 +164,70 @@ void test_ascll() {
 			printf("\n");
 		}
 
+	}
+
+}
+
+/*
+* 菜单
+*/
+void welcome() {
+
+	int n,i,j=1;
+	color(14);//黄色边框
+
+	for (i = 9; i <= 20; i++) {
+
+		for (j = 15; j <= 60; j++) {
+
+
+			gotoxy(j, i);
+
+			if (i == 9 || i == 20) {
+
+				printf("=");//打印上下边框 ==
+
+			}
+			else if (j == 15 || j == 59) {
+
+				printf("||");//打印左右边框
+			}
+		}
+
+	}
+	color(12);
+	gotoxy(25, 12);
+	printf("1.Start Game");
+
+	gotoxy(40, 12);
+	printf("2.Instruction");
+
+
+	gotoxy(25, 17);
+	printf("3.Game Rule");
+
+	gotoxy(40, 17);
+	printf("4.Quit");
+
+
+	gotoxy(21, 22);
+	color(3);
+	printf("Please choose [1,2,3,4]:[ ]\b\b");//退格 将当前位置往前一个 这样光标正好在方块里面
+	color(14);
+	scanf_s("%d", &n);
+	switch (n)
+	{
+	case 1:
+		system("cls");//清屏
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	default:
+		break;
 	}
 
 }
