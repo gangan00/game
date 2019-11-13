@@ -10,11 +10,14 @@ int main() {
 	extern int color(int c);
 	extern void title();
 	extern void test_ascll();
+	extern void flower();
 
 	system("chcp 437");
 	title();
+	flower();
 	//test_ascll();
 	system("pause");
+	
 	return EXIT_SUCCESS;
 
 

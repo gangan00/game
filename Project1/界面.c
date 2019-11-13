@@ -73,6 +73,87 @@ void title() {
 	printf("%c", 254);
 	printf("\n\n\n\n\n\n\n\n\n");
 
+	
+}
+/*
+*绘制字符花
+*/
+void flower() {
+
+	gotoxy(66, 11); //确定屏幕上要输出的位置
+	color(12);
+	printf("(_)");//红色小花瓣
+
+	gotoxy(64, 12); 
+	printf("(_)");
+
+	gotoxy(68, 12);
+	printf("(_)");
+
+	gotoxy(66,13);
+	printf("(_)");
+
+	gotoxy(67,12);
+	printf("(_)");
+
+	gotoxy(67,12);
+	color(6); 
+	printf("@");
+
+	gotoxy(72, 10);
+	color(13);
+	printf("(_)");
+
+	gotoxy(76, 10);
+	printf("(_)");
+
+	gotoxy(74, 9);
+	printf("(_)");
+
+	gotoxy(74, 11);
+	printf("(_)");
+
+	gotoxy(75, 10);
+	color(6);
+	printf("@");
+
+	gotoxy(71,12);
+	printf("(_)");
+	printf("|"); //两朵花之间的连接
+
+	gotoxy(72,11);
+	printf("/");
+
+	gotoxy(70, 13);
+	printf("\\|");//需要转义 \
+
+	gotoxy(70, 14);
+	printf("`|/");
+
+	gotoxy(70, 15);
+	printf("\\|");
+
+	gotoxy(71, 16);
+	printf("| /");
+
+	gotoxy(67,17);
+	color(10);
+	printf("\\\\\\\\\\\\\\\\\\\\");
+
+	gotoxy(73,17);
+	printf("//");
+
+	gotoxy(67,18);
+	color(2);
+	printf("^^^^^^^^^^^\n");
+
+
+	gotoxy(65,19);
+	color(5);
+	printf("ni mi gan");
+
+	gotoxy(68,20);
+	printf("shuai de mao bao\n");
 
 }
 void test_ascll() {
