@@ -1,3 +1,4 @@
+#define  _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<windows.h>
 #include<conio.h>
@@ -12,8 +13,9 @@ int main() {
 	extern void test_ascll();
 	extern void flower();
 	extern void welcome();
+	
 
-	system("chcp 437");
+	//system("chcp 437");
 	title();
 	flower();
 	welcome();
