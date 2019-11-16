@@ -26,12 +26,13 @@ struct Tetris {
 
 };
 HANDLE hOut; //控制台句柄；
-int b[4];//标记四个“口”方块：1表示有方块，0表示无方块；
+int b[4] = { 0,0,0,0 };//标记四个“口”方块：1表示有方块，0表示无方块；
 char ch;
-extern a[80][80];
+int a[80][80] = { 0 };
 extern void gotoxy(int x, int y);
 extern int color(int c);
 extern void welcome();
+
 /*
 
 俄罗斯方块共有七种基本图形，19种旋转类型。
@@ -207,6 +208,7 @@ int ifMove(struct Tetris *tetris) {
 	//非常的麻烦 主要先判断中心方块是否为空 再判断各个位置上是否为空 再根据不同的方块形状 判断是否能移动
 
 	if (a[tetris->x][tetris->y] != 0) return 0;//不可移动
+	//这个函数不 
 	else {
 		if (
 			(tetris->flag == 1 && a[tetris->x][tetris->y - 1] == 0 &&
@@ -289,7 +291,8 @@ void CleanTetris(struct Tetris *tetris) {
 			if (a[i][j] == 0 && j > FrameY) {
 				//J的值要在游戏界面里面
 				gotoxy(i, j);
-				printf(" ");//清除
+				printf("  ");//清除
+
 			}
 		}
 
@@ -297,11 +300,13 @@ void CleanTetris(struct Tetris *tetris) {
 }
 void CleanTetrisall(struct Tetris *tetris) {
 
-	for (int i = tetris->x - 2; i <= tetris->x + 4; i += 2) {
-		for (int j = tetris->y - 2; j <= tetris->y + 1; j++) {
+	for (int i = tetris->x - 4; i <= tetris->x + 4; i += 2) {
+		for (int j = tetris->y - 2; j <= tetris->y + 2; j++) {
 			//四个值也只能最多覆盖的区域
+
+			a[i][j] = 0;//全部清除
 			gotoxy(i, j);
-			printf("  ");//全部清除
+			printf("  ");//清除
 		}
 	}
 
@@ -391,16 +396,17 @@ void Flag(struct Tetris *tetris) {
 */
 void Gameplay() {
 
-	int n;
+
 	struct Tetris t;//定义结构体
 	struct Tetris *tetris = &t;//结构体指针指向结构体变量
 	//初始化所有值
 	t.number = 0;
 	t.score = 0;
-	t.speed = 300;
+	t.speed = 100;
 	t.level = 1;
 	while (1)
 	{
+
 		Flag(tetris);//得到序号
 		tetris->flag = tetris->flag % 19 + 1; //把上一个next的值给flag
 		tetris->next = tetris->next % 19 + 1;
@@ -408,44 +414,65 @@ void Gameplay() {
 		tetris->x = FrameX + 2 * Frame_width + 6;//预览界面X坐标
 		tetris->y = FrameY + 10;//预览界面Y坐标
 		tetris->flag = tetris->next;//获得下一个序号
-		CleanTetrisall(tetris);
-		PrintTetris(tetris);//打印方块
+		CleanTetrisall(tetris);//设置预览方块的值为0，为了避免下次重复打印
+		PrintTetris(tetris);//打印预览方块
+
 		tetris->x = FrameX + Frame_width;//游戏中心X坐标
-		tetris->y = FrameY - 1;//游戏中心Y坐标
+		tetris->y = FrameY - 1;//游戏中心Y坐标		
 		tetris->flag = temp;
-		printf("%d", tetris->flag);
+
+		//CleanTetrisall(tetris);
+		//printf("当前flag %d", tetris->flag);
+		/*for (int i = 0; i < 80; i++) {
+			for (int j = 0; j < 80; j++) {
+				if (a[i][j] == 1) {
+
+					printf("a[%d][%d]=1\n", i, j);
+				}
+			}
+		}*/
 		//获取按键
 		while (1)
 			//控制方块 直到他不在移动
 		{
+			setbuf(stdin, NULL);
+			fflush(stdin);//想清除缓冲区
 		label:PrintTetris(tetris);//打印方块；
 			Sleep(tetris->speed);//延缓时间
 			CleanTetris(tetris);//清除痕迹
 			temp1 = tetris->x;//记住中心方块的横坐标
 			temp2 = tetris->flag;//记住中心方块的类型
-			if (_kbhit()) {
+
+			if (_kbhit() && ifMove(tetris)) {
 				//如果键盘有输入
 				ch = _getch();
-				if (ch == 75) {
+				//ch = getchar();
+				
+				setbuf(stdin, NULL);
+				fflush(stdin);
+				if (ch == 75 && tetris->x > FrameX + 4) {
 					//左键
 					tetris->x -= 2;
 				}
-				else if (ch == 77) {
+				else if (ch == 77 && tetris->x < FrameX + 2 * Frame_width - 7) {
 					//右键
 					tetris->x += 2;
-
+					
+					//gotoxy(tetris->y, (FrameX + 2 * Frame_width - 4));
+				//printf("x:%d", tetris->x);
+					//printf("边界:%d", FrameX + 2 * Frame_width - 6);
 				}
 				else if (ch == 80) {
 					//下键 加速下落
 
 					//判断是否能移动
-					if (ifMove(tetris)) {
+					if (ifMove(tetris) && tetris->y < FrameY + Frame_height) {
 
 						tetris->y += 2;
 					}
-					else {
-						tetris->y = FrameY + Frame_height - 2;
-					}
+					//else {
+					//	tetris->y = FrameY + Frame_height - 2;
+					//}
 				}
 				else if (ch == 72) {
 					//上键 开始各种变化
@@ -503,33 +530,87 @@ void Gameplay() {
 					welcome();
 
 				}
-				else if (ifMove(tetris) == 0) {
+				//else if (ifMove(tetris) == 0) {
 
-					tetris->x = temp1;
-					tetris->flag = temp2;
-				}
-				else {
-					goto label;
-				}
-
-
+					//tetris->x = temp1;
+					//tetris->flag = temp2;
+				//}
+				//else {
+					//goto label;
+				//}
 			}
+			if (tetris->y <= FrameY + Frame_height)
+				tetris->y++;//没有操作就往下移动
 
-			tetris->y++;//没有操作就往下移动
 			if (ifMove(tetris) == 0) {
 				//不能动了 就放在这里
-				printf("结束一个");
+				//printf("结束一个");
 				tetris->y--;
 				PrintTetris(tetris);
 				Del_Fullline(tetris); //到这里才判断有么有满行的
+				setbuf(stdin, NULL);
+				fflush(stdin);
 				break;
 			}
 		}
 
-
 	}
 }
+/*
+制作游戏窗口
+*/
+void DrwaGameFrame() {
 
+	gotoxy(FrameX + Frame_width - 5, FrameY - 2);
+	color(11);
+	printf("俄罗丝方块儿~");
+	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 7);
+	color(2);
+	printf("*********");//上边框
+	gotoxy(FrameX + 2 * Frame_width + 13, FrameY + 7);
+	color(3);
+	printf("下一出现方块:");
+	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 13);
+	color(2);
+	printf("*********");//下边框
+	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 17);
+	color(14);
+	printf("↑键 ： 旋转");
+
+	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 19);
+	printf("空格 ：暂停游戏");
+	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 15);
+	printf("Esc ： 退出游戏");
+	gotoxy(FrameX, FrameY);
+	color(12);
+	printf("╔");
+	gotoxy(FrameX + 2 * Frame_width - 2, FrameY);
+	printf("╗");
+
+	gotoxy(FrameX, FrameY + Frame_height);
+	printf("╚");
+	gotoxy(FrameX + 2 * Frame_width - 2, FrameY + Frame_height);
+	printf("╝");
+	for (int i = 2; i < 2 * Frame_width - 2; i += 2) {
+		gotoxy(FrameX + i, FrameY);
+		printf("═");
+	};
+	for (int i = 2; i < 2 * Frame_width - 2; i += 2) {
+		gotoxy(FrameX + i, FrameY + Frame_height);
+		printf("═"); //打印下横框
+		a[FrameX + i][FrameY + Frame_height] = 2;//标记下横框为游戏边框，防止方块越界。
+	};
+	for (int i = 1; i < Frame_height; i++) {
+		gotoxy(FrameX, FrameY + i);
+		printf("‖"); //打印左竖框
+		a[FrameX][FrameY + i] = 2;//标记左竖框为游戏边框，防止方块越界。
+	};
+	for (int i = 1; i < Frame_height; i++) {
+		gotoxy(FrameX + 2 * Frame_width - 2, FrameY + i);
+		printf("‖"); //打印右竖框
+		a[FrameX + 2 * Frame_width - 2][FrameY + i] = 2;//标记右竖框为游戏边框，防止方块越界。
+	};
+}
 
 /*
 重新开始

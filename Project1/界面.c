@@ -9,8 +9,8 @@
 #define Frame_height 20 //游戏窗口的高度
 #define Frame_width 18 //游戏窗口的宽度
 
+extern void DrwaGameFrame();
 
-int a[80][80] = { 0 };
 
 
 //标记游戏屏幕的图案：2,0,1分别表示该位置为游戏边框，方块，无图案；初始化为无图案
@@ -182,7 +182,7 @@ void test_ascll() {
 * 菜单
 */
 void welcome() {
-	void DrwaGameFrame();
+	
 	int n, i, j = 1;
 	color(14);//黄色边框
 
@@ -243,59 +243,4 @@ void welcome() {
 		break;
 	}
 
-}
-/*
-制作游戏窗口
-*/
-void DrwaGameFrame() {
-
-	gotoxy(FrameX + Frame_width - 5, FrameY - 2);
-	color(11);
-	printf("俄罗丝方块儿~");
-	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 7);
-	color(2);
-	printf("*********");//上边框
-	gotoxy(FrameX + 2 * Frame_width + 13, FrameY + 7);
-	color(3);
-	printf("下一出现方块:");
-	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 13);
-	color(2);
-	printf("*********");//下边框
-	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 17);
-	color(14);
-	printf("↑键 ： 旋转");
-
-	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 19);
-	printf("空格 ：暂停游戏");
-	gotoxy(FrameX + 2 * Frame_width + 3, FrameY + 15);
-	printf("Esc ： 退出游戏");
-	gotoxy(FrameX, FrameY);
-	color(12);
-	printf("╔");
-	gotoxy(FrameX + 2 * Frame_width - 2, FrameY);
-	printf("╗");
-
-	gotoxy(FrameX, FrameY + Frame_height);
-	printf("╚");
-	gotoxy(FrameX + 2 * Frame_width - 2, FrameY + Frame_height);
-	printf("╝");
-	for (int i = 2; i < 2 * Frame_width - 2; i += 2) {
-		gotoxy(FrameX + i, FrameY);
-		printf("═");
-	};
-	for (int i = 2; i < 2 * Frame_width - 2; i += 2) {
-		gotoxy(FrameX + i, FrameY + Frame_height);
-		printf("═"); //打印下横框
-		a[FrameX + i][FrameY + Frame_height] = 2;//标记下横框为游戏边框，防止方块越界。
-	};
-	for (int i = 1; i < Frame_height; i++) {
-		gotoxy(FrameX, FrameY + i);
-		printf("‖"); //打印左竖框
-		a[FrameX][FrameY + i] = 2;//标记左竖框为游戏边框，防止方块越界。
-	};
-	for (int i = 1; i < Frame_height; i++) {
-		gotoxy(FrameX + 2 * Frame_width - 2, FrameY + i);
-		printf("‖"); //打印右竖框
-		a[FrameX + 2 * Frame_width - 2][FrameY + i] = 2;//标记右竖框为游戏边框，防止方块越界。
-	};
 }
