@@ -6,7 +6,7 @@
 #include<conio.h>//接收键盘输入输出（_kbhit()，_getch())
 #include<time.h>//用于获得随机数
 #include<stdlib.h>
-
+#include<math.h>
 /*宏定义*/
 #define FrameX 13 //游戏窗口左上角x轴坐标
 #define FrameY 3 //游戏窗口左上角y轴坐标
@@ -206,9 +206,12 @@ void PrintTetris(struct Tetris *tetris) {
 
 int ifMove(struct Tetris *tetris) {
 	//非常的麻烦 主要先判断中心方块是否为空 再判断各个位置上是否为空 再根据不同的方块形状 判断是否能移动
+	//printf("x,%d:y,%d,i:%d\n\n", tetris->x, tetris->y, a[tetris->x][tetris->y]);
+	if (a[tetris->x][tetris->y] != 0) {//不可移动
 
-	if (a[tetris->x][tetris->y] != 0) return 0;//不可移动
-	//这个函数不 
+		return 0;
+		//这个函数不 
+	}
 	else {
 		if (
 			(tetris->flag == 1 && a[tetris->x][tetris->y - 1] == 0 &&
@@ -298,6 +301,19 @@ void CleanTetris(struct Tetris *tetris) {
 
 	}
 }
+
+int rightmost(struct Tetris *tetris) {
+	int right = 0;
+	for (int i = tetris->x - 2; i <= tetris->x + 4; i += 2) {
+		for (int j = tetris->y - 2; j <= tetris->y + 1; j++) {
+			if (a[i][j] == 1) {
+				right = i;
+			}
+		}
+	}
+	return right;
+}
+
 void CleanTetrisall(struct Tetris *tetris) {
 
 	for (int i = tetris->x - 4; i <= tetris->x + 4; i += 2) {
@@ -331,7 +347,7 @@ void Del_Fullline(struct Tetris *tetris) {
 					for (k = FrameX + 2; i < FrameX + 2 * Frame_width - 2; k += 2) {
 						a[k][j] = 0;
 						gotoxy(k, j);
-						printf(" ");//删除满行的方块
+						printf("  ");//删除满行的方块
 					}
 					//删除行上面的方块还需要往下移动一行
 					for (k = j - 1; k >= FrameY; k--) {
@@ -341,7 +357,7 @@ void Del_Fullline(struct Tetris *tetris) {
 
 								a[i][k] = 0;
 								gotoxy(i, k);
-								printf(" ");//删除原来的方块
+								printf("  ");//删除原来的方块
 								gotoxy(i, k + 1);//y轴下移一个
 								printf("■");
 							}
@@ -402,11 +418,13 @@ void Gameplay() {
 	//初始化所有值
 	t.number = 0;
 	t.score = 0;
-	t.speed = 100;
+	t.speed = 300;
 	t.level = 1;
+	char c;
+	int right = 0;
 	while (1)
 	{
-
+		
 		Flag(tetris);//得到序号
 		tetris->flag = tetris->flag % 19 + 1; //把上一个next的值给flag
 		tetris->next = tetris->next % 19 + 1;
@@ -416,48 +434,38 @@ void Gameplay() {
 		tetris->flag = tetris->next;//获得下一个序号
 		CleanTetrisall(tetris);//设置预览方块的值为0，为了避免下次重复打印
 		PrintTetris(tetris);//打印预览方块
-
 		tetris->x = FrameX + Frame_width;//游戏中心X坐标
 		tetris->y = FrameY - 1;//游戏中心Y坐标		
 		tetris->flag = temp;
 
-		//CleanTetrisall(tetris);
-		//printf("当前flag %d", tetris->flag);
-		/*for (int i = 0; i < 80; i++) {
-			for (int j = 0; j < 80; j++) {
-				if (a[i][j] == 1) {
-
-					printf("a[%d][%d]=1\n", i, j);
-				}
-			}
-		}*/
 		//获取按键
 		while (1)
 			//控制方块 直到他不在移动
 		{
-			setbuf(stdin, NULL);
-			fflush(stdin);//想清除缓冲区
-		label:PrintTetris(tetris);//打印方块；
+		label:PrintTetris(tetris);//打印方块
 			Sleep(tetris->speed);//延缓时间
 			CleanTetris(tetris);//清除痕迹
 			temp1 = tetris->x;//记住中心方块的横坐标
 			temp2 = tetris->flag;//记住中心方块的类型
 
+
 			if (_kbhit() && ifMove(tetris)) {
 				//如果键盘有输入
-				ch = _getch();
-				//ch = getchar();
-				
-				setbuf(stdin, NULL);
-				fflush(stdin);
-				if (ch == 75 && tetris->x > FrameX + 4) {
+				ch = _getch();//
+				//ch = getchar();//时间发现 getchar()是接受不到键盘上下左右的操作的值 这和从键盘接收一个字符不一样				
+				if (ch == 75 && tetris->x) {
 					//左键
 					tetris->x -= 2;
 				}
-				else if (ch == 77 && tetris->x < FrameX + 2 * Frame_width - 7) {
+				else if (ch == 77) {
 					//右键
+					//if (!right)
+						//right = rightmost(tetris);
+
+					//printf("r=%d", right);
+					//if (tetris->x < (FrameX + 2 * Frame_width - 2 - 2 * abs(right - tetris->x)))//因为每个图形到边的距离不一样
+					//if (tetris->x < (FrameX + 2 * Frame_width - 2 - 2 * abs(right - tetris->x)))//因为每个图形到边的距离不一样
 					tetris->x += 2;
-					
 					//gotoxy(tetris->y, (FrameX + 2 * Frame_width - 4));
 				//printf("x:%d", tetris->x);
 					//printf("边界:%d", FrameX + 2 * Frame_width - 6);
@@ -466,14 +474,15 @@ void Gameplay() {
 					//下键 加速下落
 
 					//判断是否能移动
-					if (ifMove(tetris) && tetris->y < FrameY + Frame_height) {
+					if (ifMove(tetris) !=0) {
 
 						tetris->y += 2;
 					}
-					//else {
-					//	tetris->y = FrameY + Frame_height - 2;
-					//}
+					else if(ifMove(tetris) == 0) {
+						tetris->y = FrameY + Frame_height - 2;
+					}
 				}
+
 				else if (ch == 72) {
 					//上键 开始各种变化
 					if (tetris->flag >= 2 && tetris->flag <= 3) {
@@ -512,13 +521,13 @@ void Gameplay() {
 				else if (ch == 32) {
 					//空格 暂停
 					PrintTetris(tetris);
-					while (1)
+					while (_kbhit())
 					{
-						if (_kbhit()) {
-							//再按空格键就继续
-							ch = _getch();
-							if (ch == 32) goto label;
-						}
+
+						//再按空格键就继续
+						ch = _getch();
+						if (ch == 32) goto label;
+
 
 					}
 
@@ -530,17 +539,19 @@ void Gameplay() {
 					welcome();
 
 				}
-				//else if (ifMove(tetris) == 0) {
+				if (ifMove(tetris) == 0) {
+					//每次都判断还能不能移动；
+					tetris->x = temp1;
+					tetris->flag = temp2;//记录下来 每次在函数入口判断能不能移动
 
-					//tetris->x = temp1;
-					//tetris->flag = temp2;
-				//}
-				//else {
-					//goto label;
-				//}
+				}
+				else {
+					//printf("now :x,%d:y,%d,i:%d\n\n", tetris->x, tetris->y, a[tetris->x][tetris->y]);
+					goto label;
+				}
 			}
-			if (tetris->y <= FrameY + Frame_height)
-				tetris->y++;//没有操作就往下移动
+			if (tetris->y < FrameY + Frame_height)
+			tetris->y++;//没有操作就往下移动
 
 			if (ifMove(tetris) == 0) {
 				//不能动了 就放在这里
@@ -548,14 +559,19 @@ void Gameplay() {
 				tetris->y--;
 				PrintTetris(tetris);
 				Del_Fullline(tetris); //到这里才判断有么有满行的
-				setbuf(stdin, NULL);
-				fflush(stdin);
+	
+
+				while (_kbhit()) {
+					//_kbhit() 检测键盘是否有输入 包括缓冲区里的也算 _getch()再和getch 连用;
+					//这种方法很有效，建议使用，C primer 上也介绍了这种方法。
+					c = _getch();//不停地使用getchar()获取缓冲中字符，直到获取的c是“\n”或文件结尾符EOF为止	
+				}
 				break;
 			}
 		}
-
 	}
 }
+
 /*
 制作游戏窗口
 */
